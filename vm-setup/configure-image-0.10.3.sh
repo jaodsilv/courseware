@@ -30,20 +30,17 @@ exec 2>&1
 
 # Start configuration
 cd ~/
-sudo-pw apt-get update
-sudo-pw apt-get install -y dkms     # For installing VirtualBox guest additions
-
-# remove un-needed packages as recommended by above output
-sudo-pw apt-get -y autoremove
+sudo-pw yum update
+sudo-pw yum install -y dkms     # For installing VirtualBox guest additions
 
 # add profile to bash_profile as recommended by rvm
 touch ~/.bash_profile
 echo "source ~/.profile" >> ~/.bash_profile
 
 # Install RVM and ruby 1.9.3 note: may take a while to compile ruby
-sudo-pw apt-get install -y curl
+sudo-pw yum install -y curl
 # Get mpapis' pubkey per https://rvm.io/rvm/security
-gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 set +v
 curl -L https://get.rvm.io | bash -s stable --ruby=1.9.3
 source ~/.rvm/scripts/rvm
@@ -56,16 +53,14 @@ set -v
 rvm rvmrc warning ignore allGemfiles
 
 # Install sqlite3 dev
-sudo-pw apt-get -y install sqlite3 libsqlite3-dev
+sudo-pw yum -y install sqlite libsqlite3x-devel
 
 # Install required libs and optional feedvalidator for typo homework
-sudo-pw apt-get -y install libxml2-dev libxslt-dev
-sudo-pw apt-get -y install python-feedvalidator
+sudo-pw yum -y install libxml2-devel libxslt-devel
+# sudo-pw yum -y install python-feedvalidator
 
 # Install nodejs
-sudo-pw add-apt-repository ppa:chris-lea/node.js
-sudo-pw apt-get update
-sudo-pw apt-get install -y nodejs
+sudo-pw yum install -y nodejs
 
 # Install jslint
 set +v
@@ -81,128 +76,10 @@ sudo-pw rm -rf ~/jsl-0.3.0
 set -v
 
 # Install other programs
-sudo-pw apt-get install -y git
-sudo-pw apt-get install -y chromium-browser
-sudo-pw apt-get install -y graphviz
-sudo-pw apt-get install -y libpq-dev
-
-
-## Editors
-# Install VIM and add some basic config/plugins
-sudo-pw apt-get install -y vim
-set +v
-echo "filetype on  \" Automatically detect file types." >> .vimrc
-echo "set nocompatible  \" no vi compatibility." >> .vimrc
-echo "" >> .vimrc
-echo "\" Add recently accessed projects menu (project plugin)" >> .vimrc
-echo "set viminfo^=\!" >> .vimrc
-echo "" >> .vimrc
-echo "\" Minibuffer Explorer Settings" >> .vimrc
-echo "let g:miniBufExplMapWindowNavVim = 1" >> .vimrc
-echo "let g:miniBufExplMapWindowNavArrows = 1" >> .vimrc
-echo "let g:miniBufExplMapCTabSwitchBufs = 1" >> .vimrc
-echo "let g:miniBufExplModSelTarget = 1" >> .vimrc
-echo "" >> .vimrc
-echo "\" alt+n or alt+p to navigate between entries in QuickFix" >> .vimrc
-echo "map <silent> <m-p> :cp <cr>" >> .vimrc
-echo "map <silent> <m-n> :cn <cr>" >> .vimrc
-echo "" >> .vimrc
-echo "\" Change which file opens after executing :Rails command" >> .vimrc
-echo "let g:rails_default_file='config/database.yml'" >> .vimrc
-echo "" >> .vimrc
-echo "syntax enable" >> .vimrc
-echo "" >> .vimrc
-echo "set cf  \" Enable error files & error jumping." >> .vimrc
-echo "set clipboard+=unnamed  \" Yanks go on clipboard instead." >> .vimrc
-echo "set history=256  \" Number of things to remember in history." >> .vimrc
-echo "set autowrite  \" Writes on make/shell commands" >> .vimrc
-echo "set ruler  \" Ruler on" >> .vimrc
-echo "set nu  \" Line numbers on" >> .vimrc
-echo "set nowrap  \" Line wrapping off" >> .vimrc
-echo "set timeoutlen=250  \" Time to wait after ESC (default causes an annoying delay)" >> .vimrc
-echo "\" colorscheme vividchalk  \" Uncomment this to set a default theme" >> .vimrc
-echo "" >> .vimrc
-echo "\" Formatting" >> .vimrc
-echo "set ts=2  \" Tabs are 2 spaces" >> .vimrc
-echo "set bs=2  \" Backspace over everything in insert mode" >> .vimrc
-echo "set shiftwidth=2  \" Tabs under smart indent" >> .vimrc
-echo "set nocp incsearch" >> .vimrc
-echo "set cinoptions=:0,p0,t0" >> .vimrc
-echo "set cinwords=if,else,while,do,for,switch,case" >> .vimrc
-echo "set formatoptions=tcqr" >> .vimrc
-echo "set cindent" >> .vimrc
-echo "set autoindent" >> .vimrc
-echo "set smarttab" >> .vimrc
-echo "set expandtab" >> .vimrc
-echo "" >> .vimrc
-echo "\" Visual" >> .vimrc
-echo "set showmatch  \" Show matching brackets." >> .vimrc
-echo "set mat=5  \" Bracket blinking." >> .vimrc
-echo "set list" >> .vimrc
-echo "\" Show $ at end of line and trailing space as ~" >> .vimrc
-echo "set lcs=tab:\ \ ,eol:$,trail:~,extends:>,precedes:<" >> .vimrc
-echo "set novisualbell  \" No blinking ." >> .vimrc
-echo "set noerrorbells  \" No noise." >> .vimrc
-echo "set laststatus=2  \" Always show status line." >> .vimrc
-echo "" >> .vimrc
-echo "\" gvim specific" >> .vimrc
-echo "set mousehide  \" Hide mouse after chars typed" >> .vimrc
-echo "set mouse=a  \" Mouse in all modesc" >> .vimrc
-mkdir .vim
-cd .vim
-wget http://www.vim.org/scripts/download_script.php?src_id=16429
-mv d* rails.zip
-unzip rails.zip
-rm -rf rails.zip
-# to allow :help rails, start up vim and type :helptags ~/.vim/doc
-set -v
-
-# Install emacs and add some basic config/plugins
-cd ~/
-sudo-pw apt-get install -y emacs
-set +v
-wget https://github.com/downloads/magit/magit/magit-1.1.1.tar.gz
-tar -zxvf magit-1.1.1.tar.gz
-cd magit-1.1.1/
-make
-sudo-pw make install
-echo "(require 'magit)" >> .emacs
-cd ~/
-rm -rf magit-1.1.1/ magit-1.1.1.tar.gz
-cd /usr/share/emacs
-sudo-pw mkdir includes
-cd includes
-sudo-p wget http://svn.ruby-lang.org/cgi-bin/viewvc.cgi/trunk/misc/ruby-mode.el
-sudo-pw wget http://svn.ruby-lang.org/cgi-bin/viewvc.cgi/trunk/misc/ruby-electric.el
-cd ~/
-echo "" >> .emacs
-echo "; directory to put various el files into" >> .emacs
-echo "; (add-to-list 'load-path \"/usr/share/emacs/includes\")" >> .emacs
-echo "" >> .emacs
-echo "(global-font-lock-mode 1)" >> .emacs
-echo "(setq font-lock-maximum-decoration t)" >> .emacs
-echo "" >> .emacs
-echo "; loads ruby mode when a .rb file is opened." >> .emacs
-echo "(autoload 'ruby-mode \"ruby-mode\" \"Major mode for editing ruby scripts.\" t)" >> .emacs
-echo "(setq auto-mode-alist  (cons '(\".rb$\" . ruby-mode) auto-mode-alist))" >> .emacs
-echo "(setq auto-mode-alist  (cons '(\".rhtml$\" . html-mode) auto-mode-alist))" >> .emacs
-echo "" >> .emacs
-echo "(add-hook 'ruby-mode-hook" >> .emacs
-echo "        (lambda()" >> .emacs
-echo "          (add-hook 'local-write-file-hooks" >> .emacs
-echo "                  	'(lambda()" >> .emacs
-echo "                     	(save-excursion" >> .emacs
-echo "                       	(untabify (point-min) (point-max))" >> .emacs
-echo "                       	(delete-trailing-whitespace)" >> .emacs
-echo "                       	)))" >> .emacs
-echo "        	(set (make-local-variable 'indent-tabs-mode) 'nil)" >> .emacs
-echo "        	(set (make-local-variable 'tab-width) 2)" >> .emacs
-echo "        	(imenu-add-to-menubar \"IMENU\")" >> .emacs
-echo "        	(define-key ruby-mode-map \"\C-m\" 'newline-and-indent)" >> .emacs
-echo "        	(require 'ruby-electric)" >> .emacs
-echo "        	(ruby-electric-mode t)" >> .emacs
-echo "        	))" >> .emacs
-set -v
+sudo-pw yum install -y git
+# sudo-pw yum install -y chromium-browser
+sudo-pw yum install -y graphviz
+sudo-pw yum install -y libpqxx-devel
 
 ## GEMS
 
@@ -238,7 +115,7 @@ rvm 1.9.3 do gem install jquery-rails
 set -v
 gem install fakeweb
 
-wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+wget -O- https://toolbelt.heroku.com/install.sh | sh
 
 # Restore stdout and stderr and close file descriptors 3 and 4
 exec 1>&3 3>&-
